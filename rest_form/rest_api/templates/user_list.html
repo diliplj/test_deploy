@@ -1,0 +1,31 @@
+{% block content %}
+    <div class="container">
+        <form action="{% url 'list' %}" method="post">
+            {% csrf_token %}
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Register</div>
+                    <div class="panel-body">
+                        {% if error_message %}
+                            <p class="bg-danger p-d ml-b">{{ error_message }}</p>
+                        {% endif %}
+                       
+                        <div class="form-group clearfix">
+                            <div class="col-md-6">
+                                {% for data in datas %}
+                                    {{data.username}}
+                                    {{data.email}}
+                                    
+                                    <a href="{% url 'delete' data.id %}" class="parag delete-btn">Delete</a>
+                                    <a href="{% url 'update' data.id %}" class="parag delete-btn">Update</a>
+                                    <br>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
