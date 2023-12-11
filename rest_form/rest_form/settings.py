@@ -23,8 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-qitb5g437t@h14$rmqz*1!7rbkpbyjhfi^i9fxw5yd1fv9naz%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+#gunicorn --bind 0.0.0.0:8000 textutils.wsgi
+ALLOWED_HOSTS = ['192.168.0.60','192.168.0.61','192.168.0.62','*']
 
 
 # Application definition
