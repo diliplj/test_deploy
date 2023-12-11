@@ -4,12 +4,15 @@
         
         <form action="{% url 'register' %}" method="post">
             {% csrf_token %}
+            
             <div class="panel-heading "><h4>Register</h4></div>
             <div class="form-group">
                 <label for="exampleInputPassword1">Username</label>
                 <div class="col-md-6">
                     {{ form.username }}
                 </div>
+
+                <small id="emailHelp" class="text-danger">{{ form.errors.username }}</small>
               </div>
             
             <div class="form-group">
@@ -17,17 +20,34 @@
               <div class="col-md-6">
                 {{ form.email }}
                 </div>
-              <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+              <small id="emailHelp" class="text-danger">{{ form.errors.email }}</small>
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1">Password</label>
                 <div class="col-md-6">
                     {{ form.password }}
                 </div>
+                <small id="emailHelp" class="text-danger">{{ form.errors.password }}</small>
             </div>
             <div class="col-auto my-2">
             <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
+                            
+              <div class="">
+                <small class="alert-heading text-dark">Note!</small>
+                <ul>
+                  <li class="text-danger" style="font-size: x-small;">The password must contain lowercase character.</li>
+                  <li class="text-danger" style="font-size: x-small;">The password must contain uppercase character.</li>
+                  <li class="text-danger" style="font-size: x-small;">The password must contain numbers.</li>
+                  <li class="text-danger" style="font-size: x-small;"> length should be atleast 5.</li>
+                  </ul>
+                
+              </div>   
+
+            <div class="col-auto my-2">
+              <small id="emailHelp" class="text-dark">if you have an account please </small>
+              <a href="{% url 'login' %}" class="text-primary" style="text-decoration:none">Login</a>
+                  </div>    
         </form>
 
     </div>

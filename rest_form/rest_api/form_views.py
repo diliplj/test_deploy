@@ -28,32 +28,49 @@ class user_create(TemplateView):
     
     def get(self,request,*args,**kwargs):
         form = RegisterForm()
-        if kwargs.get('pk'):
-            id = kwargs.get('pk')
-            data = Register.objects.get(pk=id)
-            form = RegisterForm(self.request.POST)
-            
-            return render(request,self.template_name,{'form':form, 'data':data})
-        else:
-            return render(request,self.template_name,{'form':form})
+        return render(request,self.template_name,{'form':form})
 
     def post(self,request,*args,**kwargs):
         form = RegisterForm()
         if self.request.method == "POST":
             form = RegisterForm(self.request.POST)
+            print("self.request.POST",self.request.POST)
             if form.is_valid():
                 form.save()
                 msg = "Success"
                 return redirect('list')
             else:
-                error = form.errors.as_data()
-            return render(request,self.template_name,{'form':form})
+                form = RegisterForm(self.request.POST)
+                print(form.errors.as_data)
+        return render(request,self.template_name,{'form':form})
+
+class user_login(TemplateView):
+    template_name = "login.html"
+    
+    def get(self,request,*args,**kwargs):
+        form = LoginForm()
+        return render(request,self.template_name,{'form':form})
+
+    def post(self,request,*args,**kwargs):
+        form = LoginForm()
+        if self.request.method == "POST":
+            form = LoginForm(self.request.POST)
+            email = self.request.POST['email']
+            password = self.request.POST['password']
+            if Register.objects.filter(email=email, password=password).exists():
+                return redirect('list')
+            else:
+                form = LoginForm(self.request.POST)
+        return render(request,self.template_name,{'form':form})
+
+
+
 
 class user_update(TemplateView):
     template_name = "update_register.html"
     
     def get(self,request,*args,**kwargs):
-        form = RegisterForm()
+        form = EditRegisterForm()
         if kwargs.get('pk'):
             id = kwargs.get('pk')
             data = Register.objects.get(pk=id)
