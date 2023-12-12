@@ -9,4 +9,7 @@ urlpatterns = [
     path('register_update/<int:pk>/',rest_views.register_page.as_view({'post':'update'}),name="register_update"),
     path('register_retrieve/<int:pk>/',rest_views.register_page.as_view({'get':'retrieve'}),name="register_retrieve"),
     path('register_delete/<int:pk>/',rest_views.register_page.as_view({'get':'delete'}),name="register_delete"),
+
+    ### LOGIN PAGE ####
+    path('login_page/',rest_views.Login_page.as_view({'post':'create'}), name="login_page"),
 ]

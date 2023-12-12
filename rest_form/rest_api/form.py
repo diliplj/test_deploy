@@ -61,6 +61,25 @@ class EditRegisterForm(forms.ModelForm):
         self.instance = getattr(self, 'instance', None)   
         print("instance",self.instance)         
 
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        err = password_validator(password)
+        if err:	
+            raise forms.ValidationError((err))
+        return password
+
+    def clean_email(self):
+        data = self.cleaned_data.get('email')
+        
+        if Register.objects.filter(email=data).exists():
+            raise forms.ValidationError(("This email is already exists please prefer other email"))
+        return data
+    
+    def clean_username(self):  
+        username = self.cleaned_data.get('username')  
+        if Register.objects.filter(username=username).exists():
+            raise forms.ValidationError(("This username is already exists please prefer other email"))
+        return username
 
 class LoginForm(forms.Form):
     email = forms.EmailField(required=True, max_length=255)
