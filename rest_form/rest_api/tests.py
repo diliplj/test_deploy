@@ -42,3 +42,8 @@ from django.test import TestCase
 #         proxy_pass http://unix:/run/gunicorn.sock;
 #     }
 # }
+
+
+# {% for message in messages %}
+#     <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+#     {% endfor %}

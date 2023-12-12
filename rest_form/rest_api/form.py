@@ -28,7 +28,6 @@ class RegisterForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RegisterForm, self).__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)   
-        print("instance",instance) 
 
     def clean_email(self):
         data = self.cleaned_data.get('email')
@@ -40,7 +39,8 @@ class RegisterForm(forms.ModelForm):
     def clean_username(self):  
         username = self.cleaned_data.get('username')  
         if Register.objects.filter(username=username).exists():
-            raise forms.ValidationError(("This username is already exists"))
+            if User.objects.filter(username=username).exists():
+                raise forms.ValidationError(("This username is already exists"))
         return username
     
     def clean_password(self):
@@ -75,11 +75,11 @@ class EditRegisterForm(forms.ModelForm):
             raise forms.ValidationError(("This email is already exists please prefer other email"))
         return data
     
-    def clean_username(self):  
-        username = self.cleaned_data.get('username')  
-        if Register.objects.filter(username=username).exists():
-            raise forms.ValidationError(("This username is already exists please prefer other email"))
-        return username
+    # def clean_username(self):  
+    #     username = self.cleaned_data.get('username')  
+    #     if Register.objects.filter(username=username).exists():
+    #         raise forms.ValidationError(("This username is already exists please prefer other username"))
+    #     return username
 
 class LoginForm(forms.Form):
     email = forms.EmailField(required=True, max_length=255)
@@ -91,7 +91,6 @@ class LoginForm(forms.Form):
       
     def clean_email(self):
         data = self.cleaned_data.get('email')
-        
         if not Register.objects.filter(email=data).exists():
             print("form email error ")
             raise forms.ValidationError(("This email is not exists"))
