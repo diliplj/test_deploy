@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+{% block content %}
+  <header id="header">
+    <nav class="navbar navbar-expand-md navbar-primary fixed-top shadow-sm px-1" style="background-color: #ffffff;border-right: 1px solid #e7e7e7;" id="id_fixed_nav">
+      
+      <div class="container-fluid">
+        <a class="" href="{% url 'home' %}"> 
+            <img src="{{page_kwargs}}image/new.svg" ></a>
+            <div class="navbar-nav">
+              <a href="{% url 'about_us' %}" class="d-block link-dark mt-2 text-decoration-none" id="aboutus" aria-expanded="false">
+                About Us
+              </a>
+                <div class="mt-0">
+                    <div class="dropdown">
+                      <a href="#" class="d-block link-dark text-decoration-none" id="userMenu" data-bs-toggle="dropdown" aria-expanded="true">
+                          {% if request.session.user_details.avatar %}
+                          <img src="{{request.session.user_details.avatar}}" width="36" height="36" class="rounded-circle">
+                          {% else %}
+                          <img src="{{page_kwargs}}image/user.svg" class="img-fluid user-avatar user-avatar-md " width="36" height="36">
+                          {% endif %}
+                      </a> 
+                      <ul class="dropdown-menu dropdown-menu-end small shadow-lg bg-dark position-absolute rounded-0 p-0 fs-7 mt-1" style="min-width:18rem" aria-labelledby="userMenu">
+                            <li><a class="dropdown-item text-dark" href="#">Settings</a></li>
+                          <li class="dropdown-item mb-1 border-top border-secondary"><a class="dropdown-item  text-muted" href="{% url 'logout' %}">Logout</a></li>
+                      </ul>
+                    </div>
+                </div>
+            </div>
+      </div>
+    </nav>
+  </header>
+{% endblock %}  

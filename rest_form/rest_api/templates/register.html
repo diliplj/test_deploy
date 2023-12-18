@@ -4,7 +4,7 @@
         
         <form action="{% url 'register' %}" method="post">
             {% csrf_token %}
-            
+          
             <div class="panel-heading"><h4 style="text-align: center;">Register</h4></div>
               <div class="form-group" >
                   <label for="exampleInputPassword1">Username</label>
@@ -16,7 +16,7 @@
                   <small id="emailHelp" class="text-danger">{{msg}}</small>
                   {% endfor %}
                   {% else %}
-                  <small id="emailHelp" class="text-danger">{{ form.errors.email }}</small>
+                  <small id="emailHelp" class="text-danger">{{ form.errors.username }}</small>
                   {% endif %}
                 </div>
               
@@ -44,7 +44,7 @@
                     <li class="text-danger" style="font-size: x-small;">The password must contain lowercase character.</li>
                     <li class="text-danger" style="font-size: x-small;">The password must contain uppercase character.</li>
                     <li class="text-danger" style="font-size: x-small;">The password must contain numbers.</li>
-                    <li class="text-danger" style="font-size: x-small;"> length should be atleast 5.</li>
+                    <li class="text-danger" style="font-size: x-small;"> length should be atleast 8.</li>
                     </ul>
                   
                 </div>   

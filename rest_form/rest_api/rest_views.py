@@ -4,6 +4,14 @@ from rest_framework.response import Response
 from rest_api.models import *
 from rest_api.serializer import *
 from django.shortcuts import render,redirect
+from django.contrib.auth import authenticate, login, logout
+from rest_api.decorators import *
+from rest_framework.decorators import action
+from django.contrib.auth.decorators import login_required 
+from django.utils.decorators import method_decorator
+from rest_framework.permissions import IsAuthenticated
+from rest_api.form import password_validator,is_valid_email
+from django.core.validators import validate_email
 # Create your views here.
 
 
@@ -12,10 +20,10 @@ class register_page(ModelViewSet):
 
     def get_queryset(self, pk=None):
         if pk:
-            data = Register.objects.get(id=pk)
+            data = User.objects.get(id=pk)
             return data
         else:
-            data = Register.objects.all()
+            data = User.objects.all()
             return data   
 
     def get(self,request,*args,**kwargs):
@@ -24,7 +32,7 @@ class register_page(ModelViewSet):
         data = serializer.data
         return Response(data)
 
-    def retrieve(self, request,pk):
+    def retrieve(self,request,pk):
         if pk:
             datas = self.get_queryset(pk=pk)
             serializer = self.serializer_class(datas)
@@ -34,26 +42,42 @@ class register_page(ModelViewSet):
     def create(self,request,*args,**kwargs):
         serializer = self.serializer_class(data=request.data)
         data= request.data
-        if Register.objects.filter(email=data['email']).exists():
+        mail_error = is_valid_email(self.request.POST['email'])
+        if mail_error:
+            raise serializers.ValidationError('Invalid email address')
+        if User.objects.filter(email=data['email']).exists():
             raise serializers.ValidationError('Email already exists')
-        elif Register.objects.filter(username=data['username']).exists():
+        elif User.objects.filter(username=data['username']).exists():
             raise serializers.ValidationError('username already exists')
         else:
-            if serializer.is_valid():
-                serializer.save()
-                return redirect('register_list')
-            else:
-                serializer = self.serializer_class(data=request.data)
-        return Response({'messge':'Welcome to post method','data':data})
+            password = data['password']
+            print("len(password) ",len(password))
+            error = password_validator(password)
+            if error:
+                raise serializers.ValidationError(error)
+            user = User(
+                    username = data['username'],
+                    email= data['email'],
+                )
+            user.set_password(data['password'])
+            user.save()
+            return redirect('login_page')
+            # elif serializer.is_valid():
+            #     serializer.save()
+            #     return redirect('login_page')
+            # else:
+            #     # print("else coming",serializer.errors)
+            #     serializer = self.serializer_class(data=request.data)
+        return Response({'messge':'Welcome','data':data,"errors":serializer.errors})
     
     def update(self,request,pk):
         if pk:
             data=self.get_queryset(pk=pk)
             serializer = self.serializer_class(instance=data,data=request.data)
             requested_data= request.data
-            if Register.objects.filter(email=requested_data['email']).exists():
+            if User.objects.filter(email=requested_data['email']).exists():
                 raise serializers.ValidationError('Email already exists please prefer other email')
-            # elif Register.objects.filter(username=requested_data['username']).exists():
+            # elif User.objects.filter(username=requested_data['username']).exists():
             #     raise serializers.ValidationError('username already exists please prefer other username')
             else:    
                 if serializer.is_valid():
@@ -79,30 +103,32 @@ class Login_page(ModelViewSet):
     
     def get_queryset(self, pk=None):
         if pk:
-            data = Register.objects.get(id=pk)
+            data = User.objects.get(id=pk)
             return data
         else:
-            data = Register.objects.all()
+            data = User.objects.all()
             return data  
-        
-    # def get(self,request,*args,**kwargs):
-    #     datas = self.get_queryset()
-    #     serializer = self.serializer_class()
-    #     print("is get is calling? ")
-    #     return Response({'messge':'Welcome to Login page'})
-
 
     def create(self,request,*args,**kwargs):
         serializer = self.serializer_class(data=request.data)
         data= request.data
-        if not Register.objects.filter(email=data['email'],password=data['password']).exists():
+        # if not User.objects.filter(email=data['username'],password=data['password']).exists():
+        #     raise serializers.ValidationError('Email or password are incorrect')
+        # elif User.objects.filter(email=data['email'], password=data['password']).exists():
+        #     return redirect('register_list')
+        # else:
+        #     serializer = self.serializer_class(data=request.data)
+        user = authenticate(username=data['username'], password=data['password'])
+        if user is None:
             raise serializers.ValidationError('Email or password are incorrect')
-        elif Register.objects.filter(email=data['email'], password=data['password']).exists():
-            return redirect('register_list')
         else:
-            serializer = self.serializer_class(data=request.data)
+            login(request, user)
+            return redirect('register_list')
+        
         return Response({'messge':'Welcome to Login page','data':data})
 
-
+    def logout_page(self,request,*args,**kwargs):
+        logout(request)
+        return redirect('login_page')
     
     

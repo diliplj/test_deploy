@@ -12,4 +12,5 @@ urlpatterns = [
 
     ### LOGIN PAGE ####
     path('login_page/',rest_views.Login_page.as_view({'post':'create'}), name="login_page"),
+    path('logout_page/',rest_views.Login_page.as_view({'get':'logout_page'}), name="logout_page"),
 ]

@@ -51,6 +51,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+#Authentication backends
+AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend',
+    )
+
 ROOT_URLCONF = 'rest_form.urls'
 
 TEMPLATES = [
@@ -120,8 +125,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'rest_api', 'media', 'img_data'),
+    # os.path.join(SITE_ROOT, 'static'),
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+)
+
+# media files and images
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'rest_api', 'media', 'img_data')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+LOGOUT_REDIRECT_URL = 'login/'
+# LOGIN_REDIRECT_URL = "register_list/"
+MY_MAIL = "diliplj5@gmail.com"
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = MY_MAIL
+EMAIL_HOST_PASSWORD = 'kxmy iemy wrqb isrt'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'Kp.revilrazor <noreply@example.com>'
+

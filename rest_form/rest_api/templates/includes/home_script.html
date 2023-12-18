@@ -1,0 +1,12 @@
+<script>
+var url_string = window.location.href;
+var url = new URL(url_string);
+var tab = url.searchParams.get("mode");
+if(tab){
+    $("#"+tab).removeClass("btn-outline-secondary");
+    $("#"+tab).addClass("btn-secondary");
+}else{
+    $("#all").removeClass("btn-outline-secondary");
+    $("#all").addClass("btn-secondary");
+}
+</script>

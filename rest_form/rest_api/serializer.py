@@ -1,15 +1,21 @@
 from rest_api.models import *
 from rest_framework import serializers
 
-
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Register
-        fields = "__all__"
+        model = User
+        fields = ('username','email','password')
 
     # def validate(self, data):
-    #     pass
+    #     print("validate coming",data)
+    #     password = data.get('password')
+    #     error = password_validator(password)
+    #     if error:
+    #         raise serializers.ValidationError(error)
+    #     else:
+    #         return data
+        
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(label="Email address", max_length=57, required=True)
-    password = serializers.CharField(max_length = 200, required=True)
+    username = serializers.EmailField(label="username", max_length=57, required=True)
+    password = serializers.CharField(label = "password",max_length = 200, required=True)

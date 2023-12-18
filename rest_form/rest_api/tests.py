@@ -47,3 +47,13 @@ from django.test import TestCase
 # {% for message in messages %}
 #     <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
 #     {% endfor %}
+
+
+'''
+
+# assuming which duplicate is removed doesn't matter...
+for row in MyModel.objects.all().reverse():
+    if MyModel.objects.filter(photo_id=row.photo_id).count() > 1:
+        row.delete()
+
+'''
