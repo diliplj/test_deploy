@@ -90,7 +90,7 @@ class user_login(TemplateView):
                 print("user ",user)
             else:
                 login(request, user)
-                return redirect('list')
+                return redirect('blog_list')
             
         else:
             form = LoginForm(self.request.POST)
@@ -136,7 +136,6 @@ class OTP_Page(TemplateView):
     def get(self,request,*args,**kwargs):
         form = OTPForm()
         if kwargs.get('resend'):
-            print("self.request.session.get('verify_email')",self.request.session.get('verify_email'))
             digit,email = six_digit_otp(6,self.request.session.get('verify_email'))
             OTP.objects.filter(email = email).update(otp=digit)
             msg = send_otp_to_email(digit,email)
@@ -162,79 +161,90 @@ class OTP_Page(TemplateView):
         return render(request,self.template_name,{'form':form})  
 
 
-@method_decorator(admin_only, name='dispatch')
-class article_list(TemplateView):
-    template_name = 'article_list.html'
+# @method_decorator(admin_only, name='dispatch')
+class blog_list(TemplateView):
+    template_name = 'blog_list.html'
     def get(self,request,*args,**kwargs):
         if not kwargs.get('uid'):
-            article_data= Article.objects.all()
-            return render(request,self.template_name,{'article_datas':article_data})
+            blog_data= Blog.objects.all()
+            if Role.objects.filter(email__email=request.user.email, role="admin").exists():
+                print("yesss")
+                return render(request,self.template_name,{'blog_datas':blog_data,'admin':True})
+            else:
+                print("Noooo")
+                return render(request,self.template_name,{'blog_datas':blog_data,'admin':False})
+
+        
         else:
             uid = kwargs.get('uid')
-            if Article.objects.filter(uid=uid).exists():
-                Article.objects.filter(uid=uid).delete()
-                return redirect('article_list')
+            if Blog.objects.filter(uid=uid).exists():
+                Blog.objects.filter(uid=uid).delete()
+                return redirect('blog_list')
 
 
 
 @method_decorator(admin_only, name='dispatch')
-class article(TemplateView):
-    template_name = "article.html"
+class blog(TemplateView):
+    template_name = "blog.html"
     
     def get(self,request,*args,**kwargs):
-        form = ArticleForm()
+        form = BlogForm()
         return render(request, self.template_name,{'form':form})
 
     def post(self,request,*args,**kwargs):
-        form = ArticleForm()
+        form = BlogForm()
         if request.method =="POST":
-            form = ArticleForm(request.POST,request.FILES)
+            form = BlogForm(request.POST,request.FILES)
             if form.is_valid():
-                article = form.save(commit=False)
-                article.created_by = request.user.email if request.user.email else request.user
-                article.updated_by = request.user.email if request.user.email else request.user
-                article.save()
-                return redirect('article_list')
+                blog = form.save(commit=False)
+                blog.created_by = request.user.email if request.user.email else request.user
+                blog.updated_by = request.user.email if request.user.email else request.user
+                blog.save()
+                return redirect('blog_list')
             else:
                 print(form.error)
-                form = ArticleForm(request.POST,request.FILES)
+                form = BlogForm(request.POST,request.FILES)
         return render(request,self.template_name,{'form':form})        
 
 @method_decorator(admin_only, name='dispatch')
-class article_upload(TemplateView):
-    template_name = "article_upload.html"
+class blog_upload(TemplateView):
+    template_name = "blog_upload.html"
     
     def get(self,request,*args,**kwargs):
-        form = UploadArticleForm()
+        form = UploadBlogForm()
         if kwargs.get('uid'):
             uid =kwargs.get('uid')
-            if Article.objects.filter(uid=uid).exists():
-                data = Article.objects.get(uid=uid)
+            if Blog.objects.filter(uid=uid).exists():
+                data = Blog.objects.get(uid=uid)
                 print(" get is working")
-                form = UploadArticleForm(instance=data)
+                form = UploadBlogForm(instance=data)
                 return render(request,self.template_name,{'form':form, 'data':data,"uid":uid})
 
         return render(request, self.template_name,{'form':form})
 
     def post(self,request,uid,*args,**kwargs):
-        form = UploadArticleForm()
-        data = Article.objects.get(uid=uid)
+        form = UploadBlogForm()
+        data = Blog.objects.get(uid=uid)
         if request.method =="POST":
-            form = UploadArticleForm(request.POST,request.FILES, instance=data)
+            form = UploadBlogForm(request.POST,request.FILES, instance=data)
             if form.is_valid():
-                article_upload = form.save(commit=False)
-                article_upload.created_by = request.user.email if request.user.email else request.user
-                article_upload.updated_by = request.user.email if request.user.email else request.user
-                article_upload.save()
-                return redirect('article_list')
+                blog_upload = form.save(commit=False)
+                blog_upload.created_by = request.user.email if request.user.email else request.user
+                blog_upload.updated_by = request.user.email if request.user.email else request.user
+                blog_upload.save()
+                return redirect('blog_list')
             else:
                 print(form.error)
-                form = UploadArticleForm(request.POST,request.FILES)
+                form = UploadBlogForm(request.POST,request.FILES)
         return render(request,self.template_name,{'form':form,"data":data,"uid":uid})        
 
-class Home(TemplateView):
+class blog_detail_page(TemplateView):
+    template_name = "blog_details.html"
     def get(self,request,*args,**kwargs):
-        articles=  Article.objects.all()
+        uid = kwargs.get('uid')
+        blog_data=  Blog.objects.get(uid=uid)
+        print("blog_data ",blog_data)
+        return render(request,self.template_name,{"blog_data":blog_data,"uid":uid})
 
     # def post(self,request,*args,**kwargs):
     #     pass

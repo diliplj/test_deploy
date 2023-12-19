@@ -24,19 +24,19 @@ urlpatterns = [
     path('otp/<str:resend>/', views.OTP_Page.as_view(), name='otp'),
     
 
-    #### create article ####
-    path('article/', views.article.as_view(), name='article'),
+    #### create blog ####
+    path('blog/', views.blog.as_view(), name='blog'),
 
-    #### list article ###
-    path('article_list/', views.article_list.as_view(), name='article_list'),
+    #### list blog ###
+    path('blog_list/', views.blog_list.as_view(), name='blog_list'),
 
-    #### delete article ###
-    path('article_delete/<str:uid>/', views.article_list.as_view(), name='article_delete'),
+    #### delete blog ###
+    path('blog_delete/<str:uid>/', views.blog_list.as_view(), name='blog_delete'),
 
-    ### upload article ###
-    path('article_upload/<str:uid>/', views.article_upload.as_view(), name='article_upload'),
+    ### upload blog ###
+    path('blog_upload/<str:uid>/', views.blog_upload.as_view(), name='blog_upload'),
 
     ### Home ####
-    path('home/', views.Home.as_view(), name='home'),
+    path('blog_detail_page/<str:uid>/', views.blog_detail_page.as_view(), name='blog_detail_page'),
 
 ]

@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'rest_api',
     'rest_framework',
     'bootstrap5',
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -57,7 +59,9 @@ AUTHENTICATION_BACKENDS = (
     )
 
 ROOT_URLCONF = 'rest_form.urls'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

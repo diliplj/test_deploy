@@ -1,0 +1,20 @@
+{% include 'head.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<form action="{% url 'blog_detail_page' uid %}" method="post">
+  {% csrf_token %}
+  
+  <div class="card mb-3">
+    <img src="{{blog_data.image.url}}" class="card-img-top " style="height: 50em; width: 50em;" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">{{blog_data.title}}</h5>
+      <p class="card-text">{{blog_data.headline}}</p>
+
+      <p class="card-text">{{blog_data.body}}</p>
+      <p class="card-text"><small class="text-muted">{{blog_data.updated_on}}</small></p>
+    </div>
+  </div>
+</form>
+
+{% endblock %}

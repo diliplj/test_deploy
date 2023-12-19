@@ -59,7 +59,7 @@ class UserTable(models.Model):
     
 
 
-class Article(models.Model):
+class Blog(models.Model):
     uid = models.CharField(max_length=15, db_index=True)
     title = models.CharField(max_length = 50, null=False)
     headline = models.TextField(null=False)  
@@ -74,14 +74,14 @@ class Article(models.Model):
     datamode = models.CharField(max_length=257, default='Active', choices=DATAMODE_CHOICES)
 
     def save(self, *args, **kwargs):
-        super(Article, self).save(*args, **kwargs)
+        super(Blog, self).save(*args, **kwargs)
         if self.title:
             self.slug = slugify(self.title)
-            super(Article, self).save()
+            super(Blog, self).save()
         num = api.six_digit_otp(6,None)
         num = str(list(num)[0])
         self.uid = str(num)+'-%06d' % self.id
-        super(Article, self).save(*args, **kwargs)
+        super(Blog, self).save(*args, **kwargs)
         return self
     
     def __str__(self):
@@ -91,12 +91,12 @@ class Article(models.Model):
         return '{0}'.format(self.title)
 
     class Meta:
-        db_table = "Article" 
-        verbose_name = "Article" 
+        db_table = "Blog" 
+        verbose_name = "Blog" 
 
 
 class Comment(models.Model):
-    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    blog_model = models.ForeignKey(Blog, on_delete=models.CASCADE)
     comment = models.TextField(null=True)
     slug = models.SlugField(max_length=255,blank=True,null=True)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -107,7 +107,7 @@ class Comment(models.Model):
     datamode = models.CharField(max_length=257, default='Active', choices=DATAMODE_CHOICES)
 
     def __str__(self):
-        return '{0}'.format(self.article.title)
+        return '{0}'.format(self.blog.title)
 
     class Meta:
         db_table = "Comment" 

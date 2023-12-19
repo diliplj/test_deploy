@@ -1,4 +1,5 @@
 {% include 'head.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container-fluid d-flex justify-content-md-center align-items-center">
     <form action="{% url 'otp' %}" method="post">
@@ -7,9 +8,9 @@
             {% if email %} {{ email }}{% endif %}
             please check it</h6></div>
         <div class="form-group">
-            <label for="exampleInputUsername1">OTP</label>
+            <!-- <label for="exampleInputUsername1">OTP</label> -->
             <div class="col-md-6">
-            {{ form.otp }}
+            {{ form|crispy }}
             </div>
             {% for msg in messages %}
                 {% if msg %}

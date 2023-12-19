@@ -125,33 +125,35 @@ class OTPForm(forms.ModelForm):
 
     def clean_otp(self):
         otp_data = self.cleaned_data.get('otp')
-        if otp_data in [None,''] and type(otp_data) == str:
+        print("otp_data   ",otp_data, )
+        if otp_data in [None,'',""," "] or type(otp_data) == str:
             raise forms.ValidationError(('Enter Valid 6 digits OTP number'))      
+    
 
-
-class ArticleForm(forms.ModelForm):
-    image = forms.ImageField(label="Article Image")
+class BlogForm(forms.ModelForm):
+    image = forms.ImageField(label="Blog Images", required=False)
     def __init__(self, *args, **kwargs):
-        super(ArticleForm, self).__init__(*args, **kwargs)
+        super(BlogForm, self).__init__(*args, **kwargs)
         # self.instance = getattr(self, 'instance', None)
-        self.fields['title'].widget.attrs['size'] = 50
-        self.fields['headline'].widget.attrs['size'] = 50
+        # self.fields['title'].widget.attrs['size'] = 50
+        # self.fields['headline'].widget.attrs['size'] = 50
         self.fields['headline'].widget.attrs['style']  = 'width:500px; height:80px;'
+        self.fields['body'].widget.attrs['style']  = 'width:500px; height:150px;'
     
     class Meta:
-        model = Article
+        model = Blog
         fields = ['title','headline','body','image']
 
-class UploadArticleForm(forms.ModelForm):     
-    image = forms.ImageField(label="Article Image")
+class UploadBlogForm(forms.ModelForm):     
+    image = forms.ImageField(label="blog Image")
     
     def __init__(self, *args, **kwargs):
-        super(UploadArticleForm, self).__init__(*args, **kwargs)
+        super(UploadBlogForm, self).__init__(*args, **kwargs)
         # self.instance = getattr(self, 'instance', None)
         self.fields['title'].widget.attrs['size'] = 50
         self.fields['headline'].widget.attrs['size'] = 50
         self.fields['headline'].widget.attrs['style']  = 'width:500px; height:80px;'
     
     class Meta:
-        model = Article
+        model = Blog
         fields = ['title','headline','body','image']

@@ -1,60 +1,54 @@
 {% include 'head.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
-    <div class="container-fluid d-flex justify-content-md-center ">
-        
-        <form action="{% url 'register' %}" method="post">
-            {% csrf_token %}
-          
-            <div class="panel-heading"><h4 style="text-align: center;">Register</h4></div>
-              <div class="form-group" >
-                  <label for="exampleInputPassword1">Username</label>
-                  <div class="col-md-6">
-                      {{ form.username }}
-                  </div>
-                  {% if messages %}
-                  {% for msg in messages %}
-                  <small id="emailHelp" class="text-danger">{{msg}}</small>
-                  {% endfor %}
-                  {% else %}
-                  <small id="emailHelp" class="text-danger">{{ form.errors.username }}</small>
-                  {% endif %}
+
+<div class="col-md-7 d-flex align-items-stretch container-fluid d-flex justify-content-md-center align-items-center">
+  <div class="px-lg-4 text-center text-primary w-100">
+      <img src="{{page_kwargs}}image/logo_new.jpg" width="100%" alt="">
+      <h1 class="mb-2 mt-0">Welcome to Register page</h1>
+      <p class="lead text-muted">Remember your memories with one click</p>
+  </div>
+</div>
+<!-- <div class="container h-100 d-flex"> -->
+    <!-- <div class="col-11 align-self-center"> -->
+        <div class="row container-fluid d-flex justify-content-md-center align-items-center">
+            <div class="col-md-5 d-flex align-items-stretch mt-6">
+                <div class="card w-160 px-5 py-3 shadow border-0">
+                    <div class="card-body">
+                      <form action="{% url 'register' %}" method="post">
+                        {% csrf_token %}
+                      
+                        {{form|crispy}}
+                          <div class="col-auto my-2">
+                            <small id="emailHelp" class="text-dark">if you have an account please </small>
+                            <a href="{% url 'login' %}" class="text-primary" style="text-decoration:none">Login</a>
+                                </div>    
+                                <div class="col-auto my-2">
+                                  <button type="submit" class="btn btn-primary">Submit</button>
+                                      </div>
+                                                  
+                                    <div class="">
+                                      <small class="alert-heading text-dark">Note!</small>
+                                      <ul>
+                                        <li class="text-danger" style="font-size: x-small;">The password must contain lowercase character.</li>
+                                        <li class="text-danger" style="font-size: x-small;">The password must contain uppercase character.</li>
+                                        <li class="text-danger" style="font-size: x-small;">The password must contain numbers.</li>
+                                        <li class="text-danger" style="font-size: x-small;"> length should be atleast 8.</li>
+                                        </ul>
+                                      
+                                    </div> 
+                              </form>                
+                    </div>
                 </div>
-              
-              <div class="form-group">
-                <label for="exampleInputEmail1">Email address</label>
-                <div class="col-md-6">
-                  {{ form.email }}
-                  </div>
-                <small id="emailHelp" class="text-danger">{{ form.errors.email }}</small>
-              </div>
-              <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                  <div class="col-md-6">
-                      {{ form.password }}
-                  </div>
-                  <small id="emailHelp" class="text-danger">{{ form.errors.password }}</small>
-              </div>
-              <div class="col-auto my-2">
-              <button type="submit" class="btn btn-primary">Submit</button>
-                  </div>
-                              
-                <div class="">
-                  <small class="alert-heading text-dark">Note!</small>
-                  <ul>
-                    <li class="text-danger" style="font-size: x-small;">The password must contain lowercase character.</li>
-                    <li class="text-danger" style="font-size: x-small;">The password must contain uppercase character.</li>
-                    <li class="text-danger" style="font-size: x-small;">The password must contain numbers.</li>
-                    <li class="text-danger" style="font-size: x-small;"> length should be atleast 8.</li>
-                    </ul>
-                  
-                </div>   
-
-              <div class="col-auto my-2">
-                <small id="emailHelp" class="text-dark">if you have an account please </small>
-                <a href="{% url 'login' %}" class="text-primary" style="text-decoration:none">Login</a>
-                    </div>    
-                   
-                  </form>
-
-    </div>
+            </div>
+            
+        </div>
+    <!-- </div> -->
+<!-- </div> -->
+{% endblock %}
+{% block scripts %}
+<script>
+  // document.getElementById('id_password').setAttribute("oncopy","return false")
+  // document.getElementById('id_password').setAttribute("onpaste","return false")
+</script>
 {% endblock %}
