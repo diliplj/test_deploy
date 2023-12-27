@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh; */
+          }
+  
+  .card {
+    max-width: 100% !important;
+    width: 900px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Roboto', monospace;
+    padding: 15px;
+  }
+    /* .card-img{
+      max-width: 100% !important;
+      width: 600px !important;
+      height:50rem !important;
+     
+      display: block;
+      /* display:inline; */
+      /* object-fit: cover; */
+    
+    
+    /* } */ 
+    .card-img-top{
+      max-width: 100% !important;
+      width: 900px !important;
+      display: flex;
+      
+    }
+    .card-header{
+      font-family: 'Poppins', sans-serif;
+      font-size: x-large;
+      font-weight: 400;
+      
+    }
+  

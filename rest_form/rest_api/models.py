@@ -10,6 +10,18 @@ DATAMODE_CHOICES = (('Active','Active'),('Inactive','Inactive'),('Delete','Delet
 class Role(models.Model):
     role = models.CharField(max_length=255, null=False, default="user")
     email = models.ForeignKey(User, on_delete=models.CASCADE)
+    uid = models.CharField(max_length=15, db_index=True)
+
+    def save(self, *args, **kwargs):
+        super(Role, self).save(*args, **kwargs)
+        if self.email:
+            self.slug = slugify(self.email)
+            super(Role, self).save()
+        num = api.six_digit_otp(6,None)
+        num = str(list(num)[0])
+        self.uid = str(num)+'-%06d' % self.id
+        super(Blog, self).save(*args, **kwargs)
+        return self
 
     def save(self, *args, **kwargs):
         super(Role, self).save(*args, **kwargs)
@@ -26,7 +38,7 @@ class Role(models.Model):
 
 class OTP(models.Model):
     email  = models.EmailField(max_length=255, null=False)
-    otp = models.CharField(max_length = 6,validators=[RegexValidator(r'^\d+$', 'Enter a valid number.')])
+    otp = models.CharField(max_length = 6,validators=[RegexValidator(r'^\d+$', 'Enter a valid number.')], null=True,blank=True)
     is_verified = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
@@ -64,7 +76,8 @@ class Blog(models.Model):
     title = models.CharField(max_length = 50, null=False)
     headline = models.TextField(null=False)  
     body = models.TextField(null=False)
-    image = models.ImageField(null=False, upload_to="")
+    # image = models.ImageField(null=False, upload_to="")
+    video_url = models.CharField(max_length=255, null=True)
     slug = models.SlugField(max_length=255,blank=True,null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
@@ -84,8 +97,8 @@ class Blog(models.Model):
         super(Blog, self).save(*args, **kwargs)
         return self
     
-    def __str__(self):
-        return '{0}'.format(self.user.email)
+    # def __str__(self):
+    #     # return '{0}'.format(self.user.email)
 
     def __str__(self):
         return '{0}'.format(self.title)
@@ -94,6 +107,23 @@ class Blog(models.Model):
         db_table = "Blog" 
         verbose_name = "Blog" 
 
+
+class BlogImages(models.Model):
+    images = models.ImageField(null=True, upload_to="")
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    # uid = models.CharField(max_length=15, db_index=True)
+
+    # def save(self, *args, **kwargs):
+    #     super(BlogImages, self).save(*args, **kwargs)
+    #     num = api.six_digit_otp(6,None)
+    #     num = str(list(num)[0])
+    #     self.uid = str(num)
+    #     super(BlogImages, self.uid).save(*args, **kwargs)
+    #     return self.uid
+
+    def __str__(self):
+        return '{0}'.format(self.blog)
+ 
 
 class Comment(models.Model):
     blog_model = models.ForeignKey(Blog, on_delete=models.CASCADE)

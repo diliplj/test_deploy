@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
-from django.http import JsonResponse,response,HttpResponse
+from django.http import JsonResponse,response,HttpResponse,HttpResponseRedirect
 from rest_api.form import *
 from rest_api.decorators import *
 from django.contrib.auth.decorators import login_required
@@ -40,6 +40,15 @@ class user_create(TemplateView):
     
     def get(self,request,*args,**kwargs):
         form = RegisterForm()
+        if kwargs.get('mode') in ['cancel']:
+            email =self.request.session['verify_email']
+            if OTP.objects.filter(email=email).exists():
+                OTP.objects.filter(email=email).delete()
+            if User.objects.filter(email=email).exists():
+                User.objects.filter(email=email).delete()
+            if self.request.session['verify_email']:
+                del self.request.session['verify_email']    
+
         return render(request,self.template_name,{'form':form})
 
     def post(self,request,*args,**kwargs):
@@ -145,8 +154,8 @@ class OTP_Page(TemplateView):
     def post(self,request,*args,**kwargs):
         form = OTPForm()
         otp_data = self.request.POST['otp']
-        form = OTPForm(self.request.POST)
         email = self.request.session.get('verify_email')
+        form = OTPForm(self.request.POST,email)
         if self.request.method == "POST":
             if OTP.objects.filter(otp=otp_data, email=email).exists():
                 OTP.objects.filter(otp=otp_data, email=email).update(
@@ -160,21 +169,33 @@ class OTP_Page(TemplateView):
             form = OTPForm(self.request.POST)
         return render(request,self.template_name,{'form':form})  
 
-
+''''''
 # @method_decorator(admin_only, name='dispatch')
 class blog_list(TemplateView):
     template_name = 'blog_list.html'
     def get(self,request,*args,**kwargs):
+        data= []
+        images = []
+        img_url = []
         if not kwargs.get('uid'):
             blog_data= Blog.objects.all()
+            for blog in blog_data:
+                data.append(blog)
+            for each_blog_data in data:
+                images.append(BlogImages.objects.filter(blog__uid=each_blog_data.uid).last())
+            
+            for img in images:
+               img_url.append(img)
             if Role.objects.filter(email__email=request.user.email, role="admin").exists():
                 print("yesss")
-                return render(request,self.template_name,{'blog_datas':blog_data,'admin':True})
+                return render(request,self.template_name,{'blog_datas':blog_data,'admin':True,'images': img_url,"logged":request.user.is_authenticated})
             else:
                 print("Noooo")
-                return render(request,self.template_name,{'blog_datas':blog_data,'admin':False})
-
-        
+                return render(request,self.template_name,{'blog_datas':blog_data,'admin':False,'images': img_url,"logged":request.user.is_authenticated})
+            # if Role.objects.filter(email__email=request.user.email, role="admin").exists():
+            #     return render(request,self.template_name,{'admin':True})
+            # else:
+            #     return render(request,self.template_name,{'admin':False})
         else:
             uid = kwargs.get('uid')
             if Blog.objects.filter(uid=uid).exists():
@@ -186,7 +207,7 @@ class blog_list(TemplateView):
 @method_decorator(admin_only, name='dispatch')
 class blog(TemplateView):
     template_name = "blog.html"
-    
+
     def get(self,request,*args,**kwargs):
         form = BlogForm()
         return render(request, self.template_name,{'form':form})
@@ -194,16 +215,22 @@ class blog(TemplateView):
     def post(self,request,*args,**kwargs):
         form = BlogForm()
         if request.method =="POST":
-            form = BlogForm(request.POST,request.FILES)
+            form = BlogForm(request.POST) #,request.FILES
+            image_list = request.FILES.getlist('images')
             if form.is_valid():
                 blog = form.save(commit=False)
-                blog.created_by = request.user.email if request.user.email else request.user
-                blog.updated_by = request.user.email if request.user.email else request.user
+                blog.created_by = request.user.username
+                blog.updated_by = request.user.username
                 blog.save()
+                for image in image_list:
+                    data = BlogImages.objects.create(
+                    images = image,
+                    blog=blog
+                    )
                 return redirect('blog_list')
             else:
                 print(form.error)
-                form = BlogForm(request.POST,request.FILES)
+                form = BlogForm(request.POST) #request.FILES
         return render(request,self.template_name,{'form':form})        
 
 @method_decorator(admin_only, name='dispatch')
@@ -212,21 +239,23 @@ class blog_upload(TemplateView):
     
     def get(self,request,*args,**kwargs):
         form = UploadBlogForm()
+        # img_form =UploadBlogImagesForm()
         if kwargs.get('uid'):
             uid =kwargs.get('uid')
             if Blog.objects.filter(uid=uid).exists():
                 data = Blog.objects.get(uid=uid)
-                print(" get is working")
+                # img_data = BlogImages.objects.filter(blog=data)#.last()
+                # img_form =UploadBlogImagesForm(instance=img_data)
                 form = UploadBlogForm(instance=data)
-                return render(request,self.template_name,{'form':form, 'data':data,"uid":uid})
+                return render(request,self.template_name,{'form':form, 'data':data,"uid":uid}) #'img_form':img_form
 
-        return render(request, self.template_name,{'form':form})
+        return render(request, self.template_name,{'form':form}) # 'img_form':img_form
 
     def post(self,request,uid,*args,**kwargs):
         form = UploadBlogForm()
         data = Blog.objects.get(uid=uid)
         if request.method =="POST":
-            form = UploadBlogForm(request.POST,request.FILES, instance=data)
+            form = UploadBlogForm(request.POST, instance=data) #request.FILES,
             if form.is_valid():
                 blog_upload = form.save(commit=False)
                 blog_upload.created_by = request.user.email if request.user.email else request.user
@@ -235,7 +264,7 @@ class blog_upload(TemplateView):
                 return redirect('blog_list')
             else:
                 print(form.error)
-                form = UploadBlogForm(request.POST,request.FILES)
+                form = UploadBlogForm(request.POST) #request.FILES
         return render(request,self.template_name,{'form':form,"data":data,"uid":uid})        
 
 class blog_detail_page(TemplateView):
@@ -243,8 +272,54 @@ class blog_detail_page(TemplateView):
     def get(self,request,*args,**kwargs):
         uid = kwargs.get('uid')
         blog_data=  Blog.objects.get(uid=uid)
-        print("blog_data ",blog_data)
-        return render(request,self.template_name,{"blog_data":blog_data,"uid":uid})
+        img_data = BlogImages.objects.filter(blog=blog_data)
+        if Role.objects.filter(email__email=request.user.email, role="admin").exists():
+            return render(request,self.template_name,{'blog_data':blog_data,"uid":uid,'admin':True,'img_datas':img_data,"logged":request.user.is_authenticated})
+        else:
+            return render(request,self.template_name,{'blog_data':blog_data,"uid":uid,'admin':False,'img_datas':img_data,"logged":request.user.is_authenticated})
 
-    # def post(self,request,*args,**kwargs):
-    #     pass
+ 
+@method_decorator(admin_only, name='dispatch')
+class blog_image_upload(TemplateView):
+    template_name = "blog_image_upload.html"
+    
+    def get(self,request,*args,**kwargs):
+        img_form =UploadBlogImagesForm()
+        if kwargs.get('id') and kwargs.get('mode') in ['delete']:
+            BlogImages.objects.filter(id=kwargs.get('id')).delete()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+            # return render(request,self.template_name,{'form':img_form, 'mode':kwargs.get('mode'),'id':kwargs.get('id')}) #'img_form':img_form 
+                
+        else:
+            img_form =UploadBlogImagesForm()
+            img = BlogImages.objects.get(id=kwargs.get('id'))
+            form =UploadBlogImagesForm(instance=img)
+            return render(request,self.template_name,{'form':form,'id':kwargs.get('id'),'mode':kwargs.get('mode'),'data':img}) #'img_form':img_form
+
+    def post(self,request,id, mode,*args,**kwargs):
+        form = UploadBlogImagesForm()
+        
+        blog_data = BlogImages.objects.get(id=id) 
+        data = BlogImages.objects.get(id=id)
+        images= request.FILES.getlist('images')
+        if request.method =="POST":
+            form = UploadBlogImagesForm(request.FILES, instance=data)
+            if form.is_valid():
+                if mode == "add":
+                    for image in images:
+                        BlogImages.objects.create(
+                            blog=blog_data.blog,
+                            images= image
+                        )
+                
+                else:
+                    BlogImages.objects.filter(id=id).update(
+                        images= request.FILES.get('images')
+                    )
+                return redirect('blog_list')
+            else:
+                print(form.error)
+                form = UploadBlogImagesForm(request.FILES)
+        return render(request,self.template_name,{'form':form,"id":id,"mode":'update',"data":data})        
+
+

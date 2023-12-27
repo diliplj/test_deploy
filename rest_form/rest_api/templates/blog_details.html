@@ -1,20 +1,154 @@
 {% include 'head.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-
-<form action="{% url 'blog_detail_page' uid %}" method="post">
-  {% csrf_token %}
+<head>
   
-  <div class="card mb-3">
-    <img src="{{blog_data.image.url}}" class="card-img-top " style="height: 50em; width: 50em;" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">{{blog_data.title}}</h5>
-      <p class="card-text">{{blog_data.headline}}</p>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap">
 
-      <p class="card-text">{{blog_data.body}}</p>
-      <p class="card-text"><small class="text-muted">{{blog_data.updated_on}}</small></p>
+</head>
+<header>
+  <div class="collapse bg-dark" id="navbarHeader">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 col-md-7 py-4">
+          <h4 class="text-white">About</h4>
+          <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+        </div>
+        <div class="col-sm-4 offset-md-1 py-4">
+          <h4 class="text-white">Contact</h4>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-white">Follow on Twitter</a></li>
+            <li><a href="#" class="text-white">Like on Facebook</a></li>
+            <li><a href="#" class="text-white">Email me</a></li>
+            {% if logged == True %}
+            <li><a href="{% url 'logout' %}" class="text-white">Logout</a></li>
+            {% else %}
+            <li><a href="{% url 'login' %}" class="text-white">Login</a></li>
+            {% endif %}
+            <li>
+              
+          </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
-</form>
+  <div class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      {% if admin == True %}
+      <a href="{% url 'blog' %}" class="navbar-brand d-flex align-items-center" style="margin: 5px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+          <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+        </svg>
+        <strong class="mr-1" style="margin: 10px;">Add Blog</strong>
+      </a>
+      {% else %}
+      <a href="#" class="navbar-brand d-flex align-items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+          <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+        </svg>
+        <strong style="margin: 10px;"> Blog</strong>
+      </a>
+      {% endif %}
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </div>
+</header>
+<style>
+.container {
+  display: flex; justify-content: center; align-items: center;
+  /* height: 100vh; */
+        }
+
+.card {
+  max-width: 100% !important; width: 900px !important; display: flex; justify-content: center; align-items: center; font-family: 'Roboto', monospace; padding: 15px;
+}
+  /* .card-img{
+    max-width: 100% !important;
+    width: 600px !important;
+    height:50rem !important;
+   
+    display: block;
+    /* display:inline; */
+    /* object-fit: cover; */
+  
+  
+  /* } */ 
+  .card-img-top{
+    max-width: 100% !important;
+    width: 900px !important;
+    display: flex;
+    
+  }
+  .card-header{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 40px;
+    font-weight: 600;
+    
+  }
+  .card-title{
+    
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 30px;
+    
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .card-text{
+    margin: 5px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 300;
+  }
+ 
+</style>
+    <div class="container">
+    <div class="card border-0 mb-3" style="max-width: 18rem;">
+      <div class="card-header border-0"> {{blog_data.title}} </div>
+      <div class="card-body">
+        
+        <h5 class="card-title">{{blog_data.headline}}</h5>
+        <div style="margin: 5px;"><small class="" style="font-style: italic; font-family: 'Open Sans', sans-serif; font-size: medium; font-weight: 600; line-height: 1.5;"> {{blog_data.created_by}} {{blog_data.created_on}} </small></div>
+        <p class="card-text">{{blog_data.body}}</p>
+      </div>
+      {% if blog_data.video_url %}
+      <div class="ratio ratio-16x9">
+        <iframe src="{{blog_data.video_url}}" title="YouTube video"></iframe>
+      </div>
+    </div>
+  </div>
+
+    {% if img_datas %}
+    
+        {% for img in img_datas %}
+        <!-- <div class="card text-white my-2"> -->
+          <img class="card-img-top rounded mx-auto" src="{{img.images.url}}" alt="Card image">
+          <div class="container my-2">
+            
+            {% if admin == True %}
+            <a href="{% url 'blog_image_upload' img.id 'update' %}">
+              <button type="button" class="btn btn-sm btn-outline-primary" style="margin: 5px;">Update</button>
+            </a>
+            <a href="{% url 'blog_image_upload' img.id 'delete' %}">
+              <button type="button" class="btn btn-sm btn-outline-danger" style="margin: 5px;">Delete</button>
+            </a>
+            <a href="{% url 'blog_image_upload' img.id 'add' %}">
+              <button type="button" class="btn btn-sm btn-outline-success" style="margin: 5px;">Add new image</button>
+            </a>
+
+          </div>
+
+        
+        
+      
+      {% endif %}
+      {% endfor %}
+      {% endif %}
+      {% endif %}
 
 {% endblock %}

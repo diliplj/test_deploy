@@ -8,6 +8,9 @@ urlpatterns = [
     path('delete/<int:pk>/',views.user_list_page.as_view(),name='delete'),
     #create
     path('register/',views.user_create.as_view(),name='register'),
+
+    ### cancel otp ###
+    path('register/<str:mode>/',views.user_create.as_view(),name='register'),
     #update
     path('update/<int:pk>/',views.user_update.as_view(),name='update'),
 
@@ -35,6 +38,9 @@ urlpatterns = [
 
     ### upload blog ###
     path('blog_upload/<str:uid>/', views.blog_upload.as_view(), name='blog_upload'),
+
+    #### upload blog image ###
+    path('blog_image_upload/<int:id>/<str:mode>/', views.blog_image_upload.as_view(), name='blog_image_upload'),
 
     ### Home ####
     path('blog_detail_page/<str:uid>/', views.blog_detail_page.as_view(), name='blog_detail_page'),

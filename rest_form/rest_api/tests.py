@@ -197,5 +197,7 @@ for row in MyModel.objects.all().reverse():
 </div>      
 
 
+# <iframe width="560" height="315" src="https://www.youtube.com/embed/cOzr5FwZJmw?si=Xtom_zXEDyPdiw0t" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 
 '''

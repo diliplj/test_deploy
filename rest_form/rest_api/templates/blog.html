@@ -18,15 +18,25 @@
     
 </div> -->
 <div class="card-body d-flex justify-content-center">
-  <form action="{% url 'blog' %}" method="post">
+  <form enctype="multipart/form-data" action="{% url 'blog' %}" method="post">
     {% csrf_token %}
   
-    {{form|crispy}}
+      {{form|crispy}}
+      <div class="card-body shadow border-light">
+        <form enctype="multipart/form-data" action="" method="post">
+          {% csrf_token %}
+        <div class="mb-3">
+          <label for="formFileMultiple" class="form-label">Upload Images</label>
+          <input class="form-control" name="images" type="file" multiple>
           
-            <div class="col-auto my-2">
+        </div>
+      </div>
+          
+            <div class="col-auto my-3">
               <button type="submit" class="btn btn-primary">Add Blog</button>
                   </div>
                  
-          </form>                
+          </form>  
+        </form>                
 </div>
 {% endblock %}

@@ -108,9 +108,10 @@ class LoginForm(forms.Form):
     def clean_password(self):  
         password = self.cleaned_data.get('password')
         data = self.cleaned_data.get('username')  
-        if not User.objects.filter(username=data,password=password).exists():
-            print("form password error ")
-            raise forms.ValidationError(("Password is incorrect"))
+        if User.objects.filter(username=data).exists():
+            if not User.objects.filter(username=data,password=password).exists():
+                raise forms.ValidationError(("Password is incorrect"))
+        
         return password
     
 
@@ -122,16 +123,15 @@ class OTPForm(forms.ModelForm):
     
     def __init__(self,*args, **kwargs):
         super(OTPForm, self).__init__(*args, **kwargs)
-
+        
     def clean_otp(self):
         otp_data = self.cleaned_data.get('otp')
-        print("otp_data   ",otp_data, )
-        if otp_data in [None,'',""," "] or type(otp_data) == str:
+        if otp_data in [None,'',""," "] or not otp_data.isdigit():
             raise forms.ValidationError(('Enter Valid 6 digits OTP number'))      
     
 
 class BlogForm(forms.ModelForm):
-    image = forms.ImageField(label="Blog Images", required=False)
+    # image = forms.ImageField(label="Blog Images", required=False)
     def __init__(self, *args, **kwargs):
         super(BlogForm, self).__init__(*args, **kwargs)
         # self.instance = getattr(self, 'instance', None)
@@ -142,18 +142,26 @@ class BlogForm(forms.ModelForm):
     
     class Meta:
         model = Blog
-        fields = ['title','headline','body','image']
+        fields = ['title','headline','body','video_url'] #,'image'
+
 
 class UploadBlogForm(forms.ModelForm):     
-    image = forms.ImageField(label="blog Image")
-    
     def __init__(self, *args, **kwargs):
         super(UploadBlogForm, self).__init__(*args, **kwargs)
         # self.instance = getattr(self, 'instance', None)
-        self.fields['title'].widget.attrs['size'] = 50
-        self.fields['headline'].widget.attrs['size'] = 50
-        self.fields['headline'].widget.attrs['style']  = 'width:500px; height:80px;'
+        # self.fields['title'].widget.attrs['size'] = 50
+        # self.fields['headline'].widget.attrs['size'] = 50
+        # self.fields['headline'].widget.attrs['style']  = 'width:500px; height:80px;'
     
     class Meta:
         model = Blog
-        fields = ['title','headline','body','image']
+        fields = ['title','headline','body','video_url']
+
+
+class UploadBlogImagesForm(forms.ModelForm):     
+    def __init__(self, *args, **kwargs):
+        super(UploadBlogImagesForm, self).__init__(*args, **kwargs)
+    
+    class Meta:
+        model = BlogImages
+        fields = ['images']
